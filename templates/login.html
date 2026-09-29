@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Verse | Login</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body class="login-page">
+
+<section class="login-section">
+
+<div class="login-box">
+
+<div class="login-logo">
+
+<img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+
+<h1>Stay Verse</h1>
+
+<p>A Luxury Stay Hotel</p>
+
+</div>
+
+<h2>Welcome Back</h2>
+
+<p>Sign in to continue</p>
+
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+
+<div class="alert">
+
+{{ messages[0] }}
+
+</div>
+
+{% endif %}
+{% endwith %}
+
+<form action="{{ url_for('login') }}" method="POST">
+
+<div class="input-group">
+
+<label for="username">Username</label>
+
+<div class="input-box">
+
+<i class="fa-solid fa-user"></i>
+
+<input
+type="text"
+id="username"
+name="username"
+placeholder="Enter Username"
+required>
+
+</div>
+
+</div>
+
+<div class="input-group">
+
+<label for="password">Password</label>
+
+<div class="input-box">
+
+<i class="fa-solid fa-lock"></i>
+
+<input
+type="password"
+id="password"
+name="password"
+placeholder="Enter Password"
+required>
+
+</div>
+
+</div>
+
+<button type="submit" class="login-button">
+
+<i class="fa-solid fa-right-to-bracket"></i>
+
+Login
+
+</button>
+
+</form>
+
+<div class="back-home">
+
+<a href="{{ url_for('home') }}">
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back to Home
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+</body>
+</html>

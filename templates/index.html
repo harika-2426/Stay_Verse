@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Stay Verse </title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+
+        <ul>
+
+            <li><a href="/">Home</a></li>
+
+            <li><a href="#features">Features</a></li>
+
+            <li><a href="#about">About</a></li>
+
+            <li><a href="{{ url_for('login') }}" class="login-btn">Login</a></li>
+
+        </ul>
+
+    </nav>
+
+
+    <!-- Hero Section -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+          <h1><center>Stay Verse</center></h1>
+
+           
+        </div>
+
+    </section>
+
+
+    <!-- Features -->
+
+    <section id="features" class="features">
+
+        
+
+        <div class="feature-container">
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-users"></i>
+
+                <h3>Guests</h3>
+
+
+            </div>
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-bed"></i>
+
+                <h3>Rooms</h3>
+
+
+            </div>
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                <h3>Bookings</h3>
+
+                
+
+            </div>
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-credit-card"></i>
+
+                <h3>Payments</h3>
+
+                
+
+            </div>
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-user-tie"></i>
+
+                <h3>Employees</h3>
+
+                
+
+            </div>
+
+            <div class="feature-card">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <h3>Reports</h3>
+
+                
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- About -->
+
+    <section id="about" class="about">
+
+        <h2>About Stay Verse</h2>
+
+        <p>
+
+           Welcome to Stay Verse, where comfort meets convenience. Our hotel management system is designed to provide seamless room booking, efficient guest services, secure payment management, and real-time reporting. Whether you're managing reservations or delivering exceptional hospitality, Stay Verse makes every hotel operation simple, organized, and efficient.
+
+        </p>
+
+    </section>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+
+            © 2026 Stay Verse. All Rights Reserved.
+
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

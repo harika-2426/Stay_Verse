@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Verse | Rooms</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+
+<aside class="sidebar">
+<div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+<ul>
+<li><a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+{% if role=="Chief" %}
+<li><a href="{{ url_for('users') }}"><i class="fa-solid fa-user-tie"></i> Employees</a></li>
+{% endif %}
+<li><a href="{{ url_for('guests') }}"><i class="fa-solid fa-users"></i> Guests</a></li>
+<li class="active"><a href="{{ url_for('rooms') }}"><i class="fa-solid fa-bed"></i> Rooms</a></li>
+<li><a href="{{ url_for('bookings') }}"><i class="fa-solid fa-calendar-check"></i> Bookings</a></li>
+{% if role=="Chief" or role=="Accountant" %}
+<li><a href="{{ url_for('payments') }}"><i class="fa-solid fa-credit-card"></i> Payments</a></li>
+{% endif %}
+<li><a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+<li><a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Profile</a></li>
+<li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+</ul>
+</aside>
+
+<div class="main-content">
+
+<header>
+<div>
+<h1>Room Management</h1>
+<p>Manage hotel rooms and availability</p>
+</div>
+<div class="admin">
+<i class="fa-solid fa-user-circle fa-2x"></i>
+</div>
+</header>
+
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+<div class="alert-success">{{ messages[0] }}</div>
+{% endif %}
+{% endwith %}
+
+<div class="top-actions">
+
+<form action="{{ url_for('search_room') }}" method="GET">
+<input type="text" name="keyword" placeholder="Search Room..." required>
+<button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+</form>
+
+{% if role=="Chief" or role=="Manager" %}
+<button onclick="document.getElementById('addRoom').style.display='block'">
+<i class="fa-solid fa-plus"></i> Add Room
+</button>
+{% endif %}
+
+</div>
+
+<div class="table-section">
+
+<table>
+<thead>
+<tr>
+<th>Room No</th>
+<th>Room Type</th>
+<th>Price</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+{% for room in rooms %}
+<tr>
+<td>{{ room.room_id }}</td>
+<td>{{ room.room_type }}</td>
+<td>₹{{ room.price }}</td>
+<td>
+{% if room.status=="Available" %}
+<span class="active-status">{{ room.status }}</span>
+{% else %}
+<span class="inactive-status">{{ room.status }}</span>
+{% endif %}
+</td>
+<td>
+{% if role=="Chief" or role=="Manager" %}
+<button class="edit-btn" onclick="document.getElementById('edit{{ room.room_id }}').style.display='block'">
+<i class="fa-solid fa-pen"></i> Edit
+</button>
+{% endif %}
+
+{% if role=="Chief" %}
+<a href="{{ url_for('delete_room',room_id=room.room_id) }}" onclick="return confirm('Delete this room?')">
+<button class="delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
+</a>
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div>
+
+<!-- Add Room Modal -->
+<div id="addRoom" class="modal">
+<div class="modal-content">
+<span class="close" onclick="document.getElementById('addRoom').style.display='none'">&times;</span>
+<h2>Add Room</h2>
+
+<form action="{{ url_for('add_room') }}" method="POST">
+<label>Room Number</label>
+<input type="number" name="room_id" required>
+
+<label>Room Type</label>
+<select name="room_type" required>
+<option value="Single">Single</option>
+<option value="Double">Double</option>
+<option value="Deluxe">Deluxe</option>
+<option value="Suite">Suite</option>
+</select>
+
+<label>Price</label>
+<input type="number" name="price" required>
+
+<label>Status</label>
+<select name="status">
+<option value="Available">Available</option>
+<option value="Booked">Booked</option>
+<option value="Maintenance">Maintenance</option>
+</select>
+
+<button type="submit" class="save-btn"><i class="fa-solid fa-plus"></i> Add Room</button>
+</form>
+</div>
+</div>
+
+<!-- Edit Room Modals -->
+{% for room in rooms %}
+<div id="edit{{ room.room_id }}" class="modal">
+<div class="modal-content">
+<span class="close" onclick="document.getElementById('edit{{ room.room_id }}').style.display='none'">&times;</span>
+<h2>Edit Room</h2>
+
+<form action="{{ url_for('edit_room',room_id=room.room_id) }}" method="POST">
+
+<label>Room Type</label>
+<select name="room_type" required>
+<option value="Single" {% if room.room_type=="Single" %}selected{% endif %}>Single</option>
+<option value="Double" {% if room.room_type=="Double" %}selected{% endif %}>Double</option>
+<option value="Deluxe" {% if room.room_type=="Deluxe" %}selected{% endif %}>Deluxe</option>
+<option value="Suite" {% if room.room_type=="Suite" %}selected{% endif %}>Suite</option>
+</select>
+
+<label>Price</label>
+<input type="number" name="price" value="{{ room.price }}" required>
+
+<label>Status</label>
+<select name="status">
+<option value="Available" {% if room.status=="Available" %}selected{% endif %}>Available</option>
+<option value="Booked" {% if room.status=="Booked" %}selected{% endif %}>Booked</option>
+<option value="Maintenance" {% if room.status=="Maintenance" %}selected{% endif %}>Maintenance</option>
+</select>
+
+<button type="submit" class="save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+</form>
+
+</div>
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+<script>
+window.onclick=function(event){
+const modals=document.getElementsByClassName("modal");
+for(let i=0;i<modals.length;i++){
+if(event.target===modals[i]){
+modals[i].style.display="none";
+}
+}
+};
+
+setTimeout(function(){
+const alert=document.querySelector(".alert-success");
+if(alert){
+alert.style.opacity="0";
+setTimeout(function(){
+alert.style.display="none";
+},500);
+}
+},3000);
+</script>
+
+</body>
+</html>

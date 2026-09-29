@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Verse | Profile</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<aside class="sidebar">
+
+<div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+<ul>
+
+<li><a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+
+{% if role=="Chief" %}
+<li><a href="{{ url_for('users') }}"><i class="fa-solid fa-user-tie"></i> Employees</a></li>
+{% endif %}
+
+<li><a href="{{ url_for('guests') }}"><i class="fa-solid fa-users"></i> Guests</a></li>
+
+<li><a href="{{ url_for('rooms') }}"><i class="fa-solid fa-bed"></i> Rooms</a></li>
+
+<li><a href="{{ url_for('bookings') }}"><i class="fa-solid fa-calendar-check"></i> Bookings</a></li>
+
+<li><a href="{{ url_for('payments') }}"><i class="fa-solid fa-credit-card"></i> Payments</a></li>
+
+<li><a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+
+<li class="active"><a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Profile</a></li>
+
+<li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+
+</ul>
+
+</aside>
+
+<div class="main-content">
+
+<header>
+
+<div>
+
+<h1>My Profile</h1>
+
+<p>Manage your account information</p>
+
+</div>
+
+<div class="admin">
+
+<i class="fa-solid fa-user-circle fa-2x"></i>
+
+</div>
+
+</header>
+
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+<div class="alert-success">
+{{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="profile-container">
+
+<div class="profile-card">
+
+<div class="profile-image">
+
+<i class="fa-solid fa-user-circle"></i>
+
+<h2>{{ user.full_name }}</h2>
+
+<p>{{ user.role }}</p>
+
+</div>
+
+<form action="{{ url_for('profile') }}" method="POST"></form>
+
+<label>Full Name</label>
+
+<input type="text" name="full_name" value="{{ user.full_name }}" required>
+
+<label>Username</label>
+
+<input type="text" value="{{ user.username }}" readonly>
+
+<label>Email</label>
+
+<input type="email" name="email" value="{{ user.email }}" required>
+
+<label>Phone</label>
+
+<input type="text" name="phone" value="{{ user.phone }}" required>
+
+<label>Role</label>
+
+<input type="text" value="{{ user.role }}" readonly>
+
+<br><br>
+
+<button type="submit" class="save-btn">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+Update Profile
+
+</button>
+
+</form>
+
+</div>
+
+<div class="password-card">
+
+<h2>
+
+<i class="fa-solid fa-lock"></i>
+
+Change Password
+
+</h2>
+
+<form action="{{ url_for('change_password') }}" method="POST">
+
+<label>Current Password</label>
+
+<input type="password" name="old_password" required>
+
+<label>New Password</label>
+
+<input type="password" name="new_password" required>
+
+<label>Confirm Password</label>
+
+<input type="password" name="confirm_password" required>
+
+<br><br>
+
+<button type="submit" class="save-btn">
+
+<i class="fa-solid fa-key"></i>
+
+Change Password
+
+</button>
+
+</form>
+
+</div>
+
+<div class="profile-card">
+
+<h2>
+
+<i class="fa-solid fa-circle-info"></i>
+
+Account Information
+
+</h2>
+
+<table>
+
+<tr>
+
+<th>User ID</th>
+
+<td>{{ user.user_id }}</td>
+
+</tr>
+
+<tr>
+
+<th>Username</th>
+
+<td>{{ user.username }}</td>
+
+</tr>
+
+<tr>
+
+<th>Role</th>
+
+<td>{{ user.role }}</td>
+
+</tr>
+
+<tr>
+
+<th>Status</th>
+
+<td>{{ user.status }}</td>
+
+</tr>
+
+<tr>
+
+<th>Email</th>
+
+<td>{{ user.email }}</td>
+
+</tr>
+
+<tr>
+
+<th>Phone</th>
+
+<td>{{ user.phone }}</td>
+
+</tr>
+
+<tr>
+
+<th>Joined On</th>
+
+<td>{{ user.created_at }}</td>
+
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+setTimeout(function(){
+
+const alert=document.querySelector(".alert-success");
+
+if(alert){
+
+alert.style.opacity="0";
+
+setTimeout(function(){
+
+alert.style.display="none";
+
+},500);
+
+}
+
+},3000);
+
+</script>
+
+</body>
+</html>

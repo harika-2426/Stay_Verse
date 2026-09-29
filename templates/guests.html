@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Verse | Guests</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+
+<aside class="sidebar">
+<div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+
+<ul>
+<li><a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+{% if role=="Chief" %}
+<li><a href="{{ url_for('users') }}"><i class="fa-solid fa-user-tie"></i> Employees</a></li>
+{% endif %}
+<li class="active"><a href="{{ url_for('guests') }}"><i class="fa-solid fa-users"></i> Guests</a></li>
+<li><a href="{{ url_for('rooms') }}"><i class="fa-solid fa-bed"></i> Rooms</a></li>
+<li><a href="{{ url_for('bookings') }}"><i class="fa-solid fa-calendar-check"></i> Bookings</a></li>
+{% if role=="Chief" or role=="Accountant" %}
+<li><a href="{{ url_for('payments') }}"><i class="fa-solid fa-credit-card"></i> Payments</a></li>
+{% endif %}
+<li><a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+<li><a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Profile</a></li>
+<li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+</ul>
+</aside>
+
+<div class="main-content">
+
+<header>
+<div>
+<h1>Guest Management</h1>
+<p>Manage hotel guests</p>
+</div>
+<div class="admin">
+    <a href="{{ url_for('profile') }}">
+        <i class="fa-solid fa-user-circle fa-2x"></i>
+    </a>
+</div>
+</header>
+
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+<div class="alert-success">{{ messages[0] }}</div>
+{% endif %}
+{% endwith %}
+
+<div class="top-actions">
+
+<form action="{{ url_for('search_guest') }}" method="GET">
+<input type="text" name="keyword" placeholder="Search Guest..." required>
+<button type="submit">
+<i class="fa-solid fa-magnifying-glass"></i> Search
+</button>
+</form>
+
+<button onclick="document.getElementById('addGuest').style.display='block'">
+<i class="fa-solid fa-user-plus"></i> Add Guest
+</button>
+
+</div>
+
+<div class="table-section">
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Address</th>
+<th>ID Proof</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for guest in guests %}
+
+<tr>
+
+<td>{{ guest.guest_id }}</td>
+<td>{{ guest.name }}</td>
+<td>{{ guest.email }}</td>
+<td>{{ guest.phone }}</td>
+<td>{{ guest.address }}</td>
+<td>{{ guest.id_proof }}</td>
+
+<td>
+
+<button class="edit-btn" onclick="document.getElementById('edit{{ guest.guest_id }}').style.display='block'">
+<i class="fa-solid fa-pen"></i> Edit
+</button>
+
+<a href="{{ url_for('delete_guest',guest_id=guest.guest_id) }}" onclick="return confirm('Delete this guest?')">
+<button class="delete-btn">
+<i class="fa-solid fa-trash"></i> Delete
+</button>
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- Add Guest Modal -->
+
+<div id="addGuest" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="document.getElementById('addGuest').style.display='none'">&times;</span>
+
+<h2>Add Guest</h2>
+
+<form action="{{ url_for('add_guest') }}" method="POST">
+
+<label>Name</label>
+<input type="text" name="name" required>
+
+<label>Email</label>
+<input type="email" name="email" required>
+
+<label>Phone</label>
+<input type="text" name="phone" required>
+
+<label>Address</label>
+<input type="text" name="address" required>
+
+<label>ID Proof</label>
+<input type="text" name="id_proof" required>
+
+<button type="submit" class="save-btn">
+<i class="fa-solid fa-user-plus"></i> Add Guest
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Edit Guest Modals -->
+
+{% for guest in guests %}
+
+<div id="edit{{ guest.guest_id }}" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="document.getElementById('edit{{ guest.guest_id }}').style.display='none'">&times;</span>
+
+<h2>Edit Guest</h2>
+
+<form action="{{ url_for('edit_guest',guest_id=guest.guest_id) }}" method="POST">
+
+<label>Name</label>
+<input type="text" name="name" value="{{ guest.name }}" required>
+
+<label>Email</label>
+<input type="email" name="email" value="{{ guest.email }}" required>
+
+<label>Phone</label>
+<input type="text" name="phone" value="{{ guest.phone }}" required>
+
+<label>Address</label>
+<input type="text" name="address" value="{{ guest.address }}" required>
+
+<label>ID Proof</label>
+<input type="text" name="id_proof" value="{{ guest.id_proof }}" required>
+
+<button type="submit" class="save-btn">
+<i class="fa-solid fa-floppy-disk"></i> Save Changes
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<script>
+
+window.onclick=function(event){
+
+const modals=document.getElementsByClassName("modal");
+
+for(let i=0;i<modals.length;i++){
+
+if(event.target===modals[i]){
+
+modals[i].style.display="none";
+
+}
+
+}
+
+};
+
+setTimeout(function(){
+
+const alert=document.querySelector(".alert-success");
+
+if(alert){
+
+alert.style.opacity="0";
+
+setTimeout(function(){
+
+alert.style.display="none";
+
+},500);
+
+}
+
+},3000);
+
+</script>
+
+</body>
+</html>

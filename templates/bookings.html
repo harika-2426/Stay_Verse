@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Verse | Bookings</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<aside class="sidebar">
+
+<div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+<ul>
+
+<li><a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+
+{% if role=="Chief" %}
+<li><a href="{{ url_for('users') }}"><i class="fa-solid fa-user-tie"></i> Employees</a></li>
+{% endif %}
+
+<li><a href="{{ url_for('guests') }}"><i class="fa-solid fa-users"></i> Guests</a></li>
+
+<li><a href="{{ url_for('rooms') }}"><i class="fa-solid fa-bed"></i> Rooms</a></li>
+
+<li class="active"><a href="{{ url_for('bookings') }}"><i class="fa-solid fa-calendar-check"></i> Bookings</a></li>
+
+{% if role=="Chief" or role=="Accountant" %}
+<li><a href="{{ url_for('payments') }}"><i class="fa-solid fa-credit-card"></i> Payments</a></li>
+{% endif %}
+
+<li><a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+
+<li><a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Profile</a></li>
+
+<li><a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+
+</ul>
+
+</aside>
+
+<div class="main-content">
+
+<header>
+
+<div>
+<h1>Booking Management</h1>
+<p>Manage hotel reservations</p>
+</div>
+
+<div class="admin">
+    <a href="{{ url_for('profile') }}">
+        <i class="fa-solid fa-user-circle fa-2x"></i>
+    </a>
+</div>
+
+</header>
+
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+<div class="alert-success">
+{{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="top-actions">
+
+<form action="{{ url_for('search_booking') }}" method="GET">
+
+<input type="text" name="keyword" placeholder="Search Booking..." required>
+
+<button type="submit">
+<i class="fa-solid fa-magnifying-glass"></i>
+Search
+</button>
+
+</form>
+
+<button onclick="document.getElementById('addBooking').style.display='block'">
+
+<i class="fa-solid fa-calendar-plus"></i>
+
+New Booking
+
+</button>
+
+</div>
+
+<div class="table-section">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Booking ID</th>
+<th>Guest</th>
+<th>Room</th>
+<th>Check In</th>
+<th>Check Out</th>
+<th>Status</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for booking in bookings %}
+
+<tr>
+
+<td>{{ booking.booking_id }}</td>
+
+<td>{{ booking.name }}</td>
+
+<td>{{ booking.room_id }} - {{ booking.room_type }}</td>
+
+<td>{{ booking.check_in }}</td>
+
+<td>{{ booking.check_out }}</td>
+
+<td>
+
+{% if booking.booking_status=="Booked" %}
+<span class="active-status">Booked</span>
+{% elif booking.booking_status=="Cancelled" %}
+<span class="inactive-status">Cancelled</span>
+{% else %}
+<span>{{ booking.booking_status }}</span>
+{% endif %}
+
+</td>
+
+<td>
+
+<button class="edit-btn" onclick="document.getElementById('edit{{ booking.booking_id }}').style.display='block'">
+
+<i class="fa-solid fa-pen"></i>
+
+Edit
+
+</button>
+
+<a href="{{ url_for('cancel_booking',booking_id=booking.booking_id) }}" onclick="return confirm('Cancel this booking?')">
+
+<button class="delete-btn">
+
+<i class="fa-solid fa-ban"></i>
+
+Cancel
+
+</button>
+
+</a>
+
+{% if role=="Chief" %}
+
+<a href="{{ url_for('delete_booking',booking_id=booking.booking_id) }}" onclick="return confirm('Delete this booking?')">
+
+<button class="delete-btn">
+
+<i class="fa-solid fa-trash"></i>
+
+Delete
+
+</button>
+
+</a>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+{% for booking in bookings %}
+
+<div id="edit{{ booking.booking_id }}" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="document.getElementById('edit{{ booking.booking_id }}').style.display='none'">&times;</span>
+
+<h2>Edit Booking</h2>
+
+<form action="{{ url_for('edit_booking',booking_id=booking.booking_id) }}" method="POST">
+
+<label>Check In</label>
+<input type="date" name="check_in" value="{{ booking.check_in }}" required>
+
+<label>Check Out</label>
+<input type="date" name="check_out" value="{{ booking.check_out }}" required>
+
+<label>Status</label>
+
+<select name="booking_status">
+
+<option value="Booked" {% if booking.booking_status=="Booked" %}selected{% endif %}>Booked</option>
+
+<option value="Checked In" {% if booking.booking_status=="Checked In" %}selected{% endif %}>Checked In</option>
+
+<option value="Checked Out" {% if booking.booking_status=="Checked Out" %}selected{% endif %}>Checked Out</option>
+
+<option value="Cancelled" {% if booking.booking_status=="Cancelled" %}selected{% endif %}>Cancelled</option>
+
+</select>
+
+<br><br>
+
+<button type="submit" class="save-btn">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+Save Changes
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+<div id="addBooking" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="document.getElementById('addBooking').style.display='none'">&times;</span>
+
+<h2>New Booking</h2>
+
+<form action="{{ url_for('add_booking') }}" method="POST">
+
+<label>Guest</label>
+
+<select name="guest_id" required>
+
+{% for guest in guests %}
+
+<option value="{{ guest.guest_id }}">
+
+{{ guest.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<label>Room</label>
+
+<select name="room_id" required>
+
+{% for room in rooms %}
+
+{% if room.status=="Available" %}
+
+<option value="{{ room.room_id }}">
+
+{{ room.room_id }} - {{ room.room_type }}
+
+</option>
+
+{% endif %}
+
+{% endfor %}
+
+</select>
+
+<label>Check In</label>
+
+<input type="date" name="check_in" required>
+
+<label>Check Out</label>
+
+<input type="date" name="check_out" required>
+
+<br><br>
+
+<button type="submit" class="save-btn">
+
+<i class="fa-solid fa-calendar-plus"></i>
+
+Create Booking
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+<div class="cards">
+
+<div class="card">
+<i class="fa-solid fa-calendar-check"></i>
+<h2>{{ bookings|length }}</h2>
+<p>Total Bookings</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-bed"></i>
+<h2>{{ rooms|selectattr('status','equalto','Available')|list|length }}</h2>
+<p>Available Rooms</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-users"></i>
+<h2>{{ guests|length }}</h2>
+<p>Total Guests</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+window.onclick=function(event){
+
+const modals=document.getElementsByClassName("modal");
+
+for(let i=0;i<modals.length;i++){
+
+if(event.target===modals[i]){
+
+modals[i].style.display="none";
+
+}
+
+}
+
+}
+
+const alertBox=document.querySelector(".alert-success");
+
+if(alertBox){
+
+setTimeout(function(){
+
+alertBox.style.opacity="0";
+
+setTimeout(function(){
+
+alertBox.style.display="none";
+
+},500);
+
+},3000);
+
+}
+
+document.addEventListener("keydown",function(event){
+
+if(event.key==="Escape"){
+
+const modals=document.getElementsByClassName("modal");
+
+for(let i=0;i<modals.length;i++){
+
+modals[i].style.display="none";
+
+}
+
+}
+
+});
+
+</script>
+
+</body>
+</html>

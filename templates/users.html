@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stay Verse | Employee Management</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- Sidebar -->
+
+<aside class="sidebar">
+<div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+
+<ul>
+
+<li>
+
+<a href="{{ url_for('dashboard') }}">
+
+<i class="fa-solid fa-chart-line"></i>
+
+Dashboard
+
+</a>
+
+</li>
+
+<li class="active">
+
+<a href="{{ url_for('users') }}">
+
+<i class="fa-solid fa-user-tie"></i>
+
+Employees
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('guests') }}">
+
+<i class="fa-solid fa-users"></i>
+
+Guests
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('rooms') }}">
+
+<i class="fa-solid fa-bed"></i>
+
+Rooms
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('bookings') }}">
+
+<i class="fa-solid fa-calendar-check"></i>
+
+Bookings
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('payments') }}">
+
+<i class="fa-solid fa-credit-card"></i>
+
+Payments
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('reports') }}">
+
+<i class="fa-solid fa-chart-pie"></i>
+
+Reports
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('profile') }}">
+
+<i class="fa-solid fa-user"></i>
+
+Profile
+
+</a>
+
+</li>
+
+<li>
+
+<a href="{{ url_for('logout') }}">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+</li>
+
+</ul>
+
+</aside>
+
+<!-- Main -->
+
+<div class="main-content">
+
+<header>
+
+<div>
+
+<h1>Employee Management</h1>
+
+<p>Manage all Stay Verse Employees</p>
+
+</div>
+
+<div class="admin">
+    <a href="{{ url_for('profile') }}">
+        <i class="fa-solid fa-user-circle fa-2x"></i>
+    </a>
+</div>
+
+</header>
+
+<!-- Flash Message -->
+
+{% with messages=get_flashed_messages() %}
+
+{% if messages %}
+
+<div class="alert-success">
+
+{{ messages[0] }}
+
+</div>
+
+{% endif %}
+
+{% endwith %}
+
+<!-- Search -->
+
+<div class="top-actions">
+
+<form action="{{ url_for('search_users') }}" method="GET">
+
+<input
+
+type="text"
+
+name="keyword"
+
+placeholder="Search Employee..."
+
+required
+
+>
+
+<button type="submit">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+Search
+
+</button>
+
+</form>
+
+<button onclick="document.getElementById('addEmployee').style.display='block'">
+
+<i class="fa-solid fa-user-plus"></i>
+
+Add Employee
+
+</button>
+
+</div>
+
+<!-- Employee Table -->
+
+<div class="table-section">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Name</th>
+
+<th>Username</th>
+
+<th>Email</th>
+
+<th>Phone</th>
+
+<th>Role</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for user in users %}
+
+<tr>
+
+<td>{{ user.user_id }}</td>
+
+<td>{{ user.full_name }}</td>
+
+<td>{{ user.username }}</td>
+
+<td>{{ user.email }}</td>
+
+<td>{{ user.phone }}</td>
+
+<td>{{ user.role }}</td>
+
+<td>
+
+{% if user.status=="Active" %}
+
+<span class="active-status">
+
+Active
+
+</span>
+
+{% else %}
+
+<span class="inactive-status">
+
+Inactive
+
+</span>
+
+{% endif %}
+
+<td>
+    <a href="#"
+       onclick="document.getElementById('edit{{ user.user_id }}').style.display='block'">
+        <button class="edit-btn">
+            <i class="fa-solid fa-pen"></i>
+            Edit
+        </button>
+    </a>
+
+    {% if user.status=="Active" %}
+    <a href="{{ url_for('deactivate_user',user_id=user.user_id) }}">
+        <button class="deactivate-btn">
+            <i class="fa-solid fa-user-slash"></i>
+            Deactivate
+        </button>
+    </a>
+    {% else %}
+    <a href="{{ url_for('activate_user',user_id=user.user_id) }}">
+        <button class="activate-btn">
+            <i class="fa-solid fa-user-check"></i>
+            Activate
+        </button>
+    </a>
+    {% endif %}
+
+    <a href="{{ url_for('delete_user',user_id=user.user_id) }}"
+       onclick="return confirm('Delete this employee?')">
+        <button class="delete-btn">
+            <i class="fa-solid fa-trash"></i>
+            Delete
+        </button>
+    </a>
+</td>
+
+
+</tr>
+
+<!-- Edit Employee Modal -->
+
+<div
+id="edit{{ user.user_id }}"
+class="modal">
+
+<div class="modal-content">
+
+<span
+class="close"
+onclick="document.getElementById('edit{{ user.user_id }}').style.display='none'">
+
+&times;
+
+</span>
+
+<h2>Edit Employee</h2>
+
+<form
+
+action="{{ url_for('edit_user',user_id=user.user_id) }}"
+
+method="POST">
+
+<label>Full Name</label>
+
+<input
+type="text"
+name="full_name"
+value="{{ user.full_name }}"
+required>
+
+<label>Email</label>
+
+<input
+type="email"
+name="email"
+value="{{ user.email }}"
+required>
+
+<label>Phone</label>
+
+<input
+type="text"
+name="phone"
+value="{{ user.phone }}"
+required>
+
+<label>Role</label>
+
+<select name="role">
+
+<option
+value="Chief"
+{% if user.role=="Chief" %}selected{% endif %}>
+Chief
+</option>
+
+<option
+value="Manager"
+{% if user.role=="Manager" %}selected{% endif %}>
+Manager
+</option>
+
+<option
+value="Receptionist"
+{% if user.role=="Receptionist" %}selected{% endif %}>
+Receptionist
+</option>
+
+<option
+value="Accountant"
+{% if user.role=="Accountant" %}selected{% endif %}>
+Accountant
+</option>
+
+
+
+</select>
+
+<br><br>
+
+<button
+type="submit"
+class="save-btn">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+Save Changes
+
+</button>
+
+</form>
+
+<hr>
+
+
+<h3>Reset Password</h3>
+
+<form
+
+action="{{ url_for('reset_password',user_id=user.user_id) }}"
+
+method="POST">
+
+<input
+
+type="password"
+
+name="password"
+
+placeholder="New Password"
+
+required>
+
+<button
+type="submit"
+class="reset-btn">
+
+Reset Password
+
+</button>
+
+
+
+</form>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+<!-- ===========================
+     ADD EMPLOYEE MODAL
+============================ -->
+
+<div id="addEmployee" class="modal">
+
+    <div class="modal-content">
+
+        <span
+            class="close"
+            onclick="document.getElementById('addEmployee').style.display='none'">
+
+            &times;
+
+        </span>
+
+        <h2>
+
+            <i class="fa-solid fa-user-plus"></i>
+
+            Add New Employee
+
+        </h2>
+
+        <form
+            action="{{ url_for('add_user') }}"
+            method="POST">
+
+            <label>Full Name</label>
+
+            <input
+                type="text"
+                name="full_name"
+                placeholder="Enter Full Name"
+                required>
+
+            <label>Username</label>
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Enter Username"
+                required>
+
+            <label>Password</label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter Password"
+                required>
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter Email"
+                required>
+
+            <label>Phone</label>
+
+            <input
+                type="text"
+                name="phone"
+                placeholder="Enter Phone Number"
+                required>
+
+            <label>Role</label>
+
+            <select name="role" required>
+
+                <option value="">Select Role</option>
+
+                <option value="Chief">
+                    Chief
+                </option>
+
+                <option value="Manager">
+                    Manager
+                </option>
+
+                <option value="Receptionist">
+                    Receptionist
+                </option>
+
+                <option value="Accountant">
+                    Accountant
+                </option>
+
+                
+
+            </select>
+
+            <br><br>
+
+            <button
+                type="submit"
+                class="save-btn">
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Register Employee
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ===========================
+     JAVASCRIPT
+=========================== -->
+
+<script>
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+
+    const addModal = document.getElementById("addEmployee");
+
+    if (event.target == addModal) {
+        addModal.style.display = "none";
+    }
+
+    const editModals = document.getElementsByClassName("modal");
+
+    for (let i = 0; i < editModals.length; i++) {
+
+        if (event.target == editModals[i]) {
+            editModals[i].style.display = "none";
+        }
+
+    }
+
+};
+
+
+// Auto-hide flash messages
+setTimeout(function(){
+
+    const alertBox = document.querySelector(".alert-success");
+
+    if(alertBox){
+
+        alertBox.style.opacity="0";
+
+        setTimeout(function(){
+
+            alertBox.style.display="none";
+
+        },500);
+
+    }
+
+},3000);
+
+</script>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

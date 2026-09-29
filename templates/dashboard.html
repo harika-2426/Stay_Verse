@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stay Verse | Dashboard</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Stay Verse Logo">
+    <h2>Stay Verse</h2>
+</div>
+
+
+        <ul>
+
+            <li class="active">
+                <a href="{{ url_for('dashboard') }}">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            {% if role == "Chief" %}
+            <li>
+                <a href="{{ url_for('users') }}">
+                    <i class="fa-solid fa-user-tie"></i>
+                    Employees
+                </a>
+            </li>
+            {% endif %}
+
+            {% if role in ["Chief","Manager","Receptionist"] %}
+            <li>
+                <a href="{{ url_for('guests') }}">
+                    <i class="fa-solid fa-users"></i>
+                    Guests
+                </a>
+            </li>
+            {% endif %}
+
+            {% if role in ["Chief","Manager","Receptionist","Housekeeping"] %}
+            <li>
+                <a href="{{ url_for('rooms') }}">
+                    <i class="fa-solid fa-bed"></i>
+                    Rooms
+                </a>
+            </li>
+            {% endif %}
+
+            {% if role in ["Chief","Manager","Receptionist"] %}
+            <li>
+                <a href="{{ url_for('bookings') }}">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Bookings
+                </a>
+            </li>
+            {% endif %}
+
+            {% if role in ["Chief","Accountant"] %}
+            <li>
+                <a href="{{ url_for('payments') }}">
+                    <i class="fa-solid fa-credit-card"></i>
+                    Payments
+                </a>
+            </li>
+            {% endif %}
+
+            {% if role in ["Chief","Manager","Accountant"] %}
+            <li>
+                <a href="{{ url_for('reports') }}">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    Reports
+                </a>
+            </li>
+            {% endif %}
+
+            <li>
+                <a href="{{ url_for('profile') }}">
+                    <i class="fa-solid fa-user"></i>
+                    Profile
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <main class="main-content">
+
+        <header>
+
+            <div>
+
+                <h1>Dashboard</h1>
+
+                <p>Welcome {{ username }} </p>
+
+            </div>
+
+            <div class="profile">
+    <a href="{{ url_for('profile') }}">
+        <i class="fa-solid fa-user-circle fa-2x"></i>
+    </a>
+</div>
+            
+
+        </header>
+
+        <!-- Cards -->
+
+        <section class="cards">
+
+            <div class="card">
+
+                <i class="fa-solid fa-users"></i>
+
+                <h2>{{ total_guests }}</h2>
+
+                <p>Total Guests</p>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fa-solid fa-bed"></i>
+
+                <h2>{{ total_rooms }}</h2>
+
+                <p>Total Rooms</p>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                <h2>{{ total_bookings }}</h2>
+
+                <p>Total Bookings</p>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+
+                <h2>₹{{ revenue }}</h2>
+
+                <p>Total Revenue</p>
+
+            </div>
+
+        </section>
+
+        <!-- Quick Actions -->
+
+        <section class="quick-actions">
+
+            <h2>Quick Actions</h2>
+
+            <div class="action-grid">
+
+                {% if role in ["Chief","Manager","Receptionist"] %}
+                <a href="{{ url_for('guests') }}" class="action-card">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    <span>Add Guest</span>
+
+                </a>
+                {% endif %}
+
+                {% if role in ["Chief","Manager"] %}
+                <a href="{{ url_for('rooms') }}" class="action-card">
+
+                    <i class="fa-solid fa-bed"></i>
+
+                    <span>Manage Rooms</span>
+
+                </a>
+                {% endif %}
+
+                {% if role in ["Chief","Manager","Receptionist"] %}
+                <a href="{{ url_for('bookings') }}" class="action-card">
+
+                    <i class="fa-solid fa-calendar-plus"></i>
+
+                    <span>New Booking</span>
+
+                </a>
+                {% endif %}
+
+                {% if role in ["Chief","Accountant"] %}
+                <a href="{{ url_for('payments') }}" class="action-card">
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                    <span>Payments</span>
+
+                </a>
+                {% endif %}
+
+            </div>
+
+        </section>
+
+        <!-- Information -->
+         
+        
+
+        <section class="info-box">
+
+            <h2>Stay Verse Hotel </h2>
+
+            <p>
+
+                 Welcome to Stay Verse, where comfort meets convenience. Our hotel management system is designed to provide seamless room booking, efficient guest services, secure payment management, and real-time reporting. Whether you're managing reservations or delivering exceptional hospitality, Stay Verse makes every hotel operation simple, organized, and efficient.
+
+            </p>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
